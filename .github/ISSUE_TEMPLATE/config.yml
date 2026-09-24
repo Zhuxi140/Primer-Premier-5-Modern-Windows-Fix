@@ -1,8 +1,29 @@
+# Issue template chooser configuration.
+#
+# NOTE / 说明:
+# GitHub reads exactly one config.yml, so this file cannot be duplicated into a
+# separate Chinese version. Both languages are therefore inlined below.
+# GitHub 只会读取一个 config.yml，因此本文件无法拆成单独的中文版，中英文在此内联。
+#
+# Language / 语言: English · 中文说明见下方 Chinese 部分
+# 本仓库所有文档均提供中英两份：English 版与 *.zh-CN.md 版。
+
 blank_issues_enabled: false
 contact_links:
-  - name: Read the troubleshooting guide first
+  # --- English ---------------------------------------------------------------
+  - name: "EN — Read the troubleshooting guide first"
     url: https://github.com/Zhuxi140/Primer-Premier-5-Modern-Windows-Fix/blob/main/docs/troubleshooting.md
-    about: Covers the Print Spooler / wprnt.c issue, "unsupported DLL" aborts, and how to undo the patch.
-  - name: Read the technical analysis
+    about: "Covers the Print Spooler / wprnt.c issue, \"unsupported DLL\" aborts, and how to undo the patch. 中文版：docs/troubleshooting.zh-CN.md"
+
+  - name: "EN — Read the technical analysis"
     url: https://github.com/Zhuxi140/Primer-Premier-5-Modern-Windows-Fix/blob/main/docs/technical-analysis.md
-    about: Full dump analysis, disassembly, patch design and the current test matrix.
+    about: "Full dump analysis, disassembly, patch design and the current test matrix. 中文版：docs/technical-analysis.zh-CN.md"
+
+  # --- 中文 ------------------------------------------------------------------
+  - name: "中文 —— 请先阅读故障排查文档"
+    url: https://github.com/Zhuxi140/Primer-Premier-5-Modern-Windows-Fix/blob/main/docs/troubleshooting.zh-CN.md
+    about: "涵盖 Print Spooler / wprnt.c 问题、未知 DLL 版本被拒绝打补丁的情况，以及如何撤销补丁。English: docs/troubleshooting.md"
+
+  - name: "中文 —— 请先阅读技术分析文档"
+    url: https://github.com/Zhuxi140/Primer-Premier-5-Modern-Windows-Fix/blob/main/docs/technical-analysis.zh-CN.md
+    about: "完整的转储分析、反汇编、补丁设计与当前测试矩阵。English: docs/technical-analysis.md"

@@ -1,5 +1,10 @@
 # Technical Analysis — xnmba458.dll / XVT 4.58 startup crash
 
+> **Language / 语言:** **English** · [**中文版 → technical-analysis.zh-CN.md**](technical-analysis.zh-CN.md)
+>
+> 本文档的中文版位于 [`docs/technical-analysis.zh-CN.md`](technical-analysis.zh-CN.md)。
+> 英文版为技术内容的原始记录，中文版为对应译文；两者内容一一对应。
+
 This document records the full investigation: the environment, the original
 failure, the dump analysis, the disassembly, the patch design, and the
 verification that was performed.

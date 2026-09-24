@@ -1,5 +1,12 @@
 # Primer Premier 5 / XVT 4.58 — Modern Windows Compatibility Fix
 
+> **Language / 语言:** **English** · [**中文文档 → README.zh-CN.md**](README.zh-CN.md)
+>
+> A Chinese translation of this document is available at
+> [`README.zh-CN.md`](README.zh-CN.md). All documentation in this repository is
+> available in both English and Chinese; each English document links to its
+> Chinese counterpart at the top.
+
 A reproducible, verifiable compatibility patch that fixes a startup crash in
 **Primer Premier 5.00** on modern 64-bit Windows, caused by the legacy **XVT
 Runtime 4.58** shipped as `xnmba458.dll`.
@@ -238,11 +245,17 @@ A permanent fix for this layer has not been developed. See
 
 ## Documentation
 
-| Document | Contents |
-|---|---|
-| [`docs/technical-analysis.md`](docs/technical-analysis.md) | Full analysis: dump, WinDbg, disassembly, PE layout, patch design, verification |
-| [`docs/crash-analysis.md`](docs/crash-analysis.md) | Crash signature reference and how to capture your own dump |
-| [`docs/troubleshooting.md`](docs/troubleshooting.md) | Print Spooler / `wprnt.c` issue and other startup problems |
+| Document | 中文版 | Contents |
+|---|---|---|
+| [`docs/technical-analysis.md`](docs/technical-analysis.md) | [中文](docs/technical-analysis.zh-CN.md) | Full analysis: dump, WinDbg, disassembly, PE layout, patch design, verification |
+| [`docs/crash-analysis.md`](docs/crash-analysis.md) | [中文](docs/crash-analysis.zh-CN.md) | Crash signature reference and how to capture your own dump |
+| [`docs/troubleshooting.md`](docs/troubleshooting.md) | [中文](docs/troubleshooting.zh-CN.md) | Print Spooler / `wprnt.c` issue and other startup problems |
+| [`CHANGELOG.md`](CHANGELOG.md) | [中文](CHANGELOG.zh-CN.md) | Version history |
+| [`LICENSE`](LICENSE) | [中文](LICENSE.zh-CN.md) | Licence (the English text is authoritative) |
+| [`README.md`](README.md) | [中文](README.zh-CN.md) | This file |
+
+Every English document in this repository links to its Chinese counterpart at
+the top of the file.
 
 ---
 

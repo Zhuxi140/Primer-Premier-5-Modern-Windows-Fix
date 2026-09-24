@@ -1,5 +1,10 @@
 # Crash Analysis Reference
 
+> **Language / 语言:** **English** · [**中文版 → crash-analysis.zh-CN.md**](crash-analysis.zh-CN.md)
+>
+> 本文档的中文版位于 [`docs/crash-analysis.zh-CN.md`](crash-analysis.zh-CN.md)。
+> 英文版为技术内容的原始记录，中文版为对应译文；两者内容一一对应。
+
 A quick reference for the crash signatures involved, plus instructions for
 capturing your own dump so it can be compared against the analysis in
 [`technical-analysis.md`](technical-analysis.md).

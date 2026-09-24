@@ -6,6 +6,10 @@ body:
   - type: markdown
     attributes:
       value: |
+        > **Language / 语言:** **English** · [**中文版 → crash-report.zh-CN.yml**](crash-report.zh-CN.yml)
+        >
+        > 本表单的中文版为 [`crash-report.zh-CN.yml`](crash-report.zh-CN.yml)。
+
         Thanks for taking the time to report this. The single most important
         field below is the **SHA256 of your `xnmba458.dll`**.
 

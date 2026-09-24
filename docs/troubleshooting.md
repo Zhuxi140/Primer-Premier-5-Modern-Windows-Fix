@@ -1,5 +1,10 @@
 # Troubleshooting
 
+> **Language / 语言:** **English** · [**中文版 → troubleshooting.zh-CN.md**](troubleshooting.zh-CN.md)
+>
+> 本文档的中文版位于 [`docs/troubleshooting.zh-CN.md`](troubleshooting.zh-CN.md)。
+> 英文版为技术内容的原始记录，中文版为对应译文；两者内容一一对应。
+
 Common startup problems with Primer Premier 5 on modern Windows, and what is
 known about each of them.
 

@@ -1,0 +1,140 @@
+name: 崩溃报告 / 兼容性报告
+description: 报告 Primer Premier 5 启动崩溃，或提交不同版本的 xnmba458.dll
+title: "[崩溃] "
+labels: ["crash-report", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > **语言 / Language:** **中文** · [**English → crash-report.yml**](crash-report.yml)
+        >
+        > 本表单的英文版为 [`crash-report.yml`](crash-report.yml)。
+
+        感谢你花时间反馈。下面**最重要**的一项是你的 `xnmba458.dll` 的 **SHA256**。
+
+        本项目只针对一个特定版本打补丁，用 SHA256 来标识。如果你的哈希不同，
+        补丁脚本会拒绝运行——这是**有意设计**的。把你的哈希报上来，正是新增对
+        其他版本支持的方式。
+
+        请**不要**附加 `xnmba458.dll`、`Primer Premier 5.exe`、安装包、任何破解文件
+        或任何其他商业二进制文件。此类附件会被删除。
+
+  - type: input
+    id: os
+    attributes:
+      label: Windows 版本
+      description: 例如 Windows 11 家庭版
+      placeholder: Windows 11 家庭版
+    validations:
+      required: true
+
+  - type: input
+    id: build
+    attributes:
+      label: Windows Build
+      description: 运行 `winver`，或在 PowerShell 中执行 `[System.Environment]::OSVersion.Version`
+      placeholder: "26200"
+    validations:
+      required: true
+
+  - type: input
+    id: pp_version
+    attributes:
+      label: Primer Premier 版本
+      description: 见安装目录下的 `Read Me.txt`
+      placeholder: "Primer Premier 5.00"
+    validations:
+      required: true
+
+  - type: input
+    id: dll_size
+    attributes:
+      label: xnmba458.dll 大小（字节）
+      description: "`(Get-Item .\\xnmba458.dll).Length`"
+      placeholder: "360960"
+    validations:
+      required: true
+
+  - type: input
+    id: dll_sha256
+    attributes:
+      label: xnmba458.dll 的 SHA256
+      description: "`Get-FileHash .\\xnmba458.dll -Algorithm SHA256`"
+      placeholder: 64 位十六进制字符
+    validations:
+      required: true
+
+  - type: input
+    id: dll_version
+    attributes:
+      label: xnmba458.dll 文件版本
+      description: 右键该 DLL → 属性 → 详细信息
+      placeholder: "4.58.0.0"
+    validations:
+      required: false
+
+  - type: input
+    id: faulting_module
+    attributes:
+      label: Faulting module（来自事件日志）
+      placeholder: xnmba458.dll
+    validations:
+      required: false
+
+  - type: input
+    id: exception_code
+    attributes:
+      label: Exception code
+      placeholder: "0xc0000005"
+    validations:
+      required: false
+
+  - type: input
+    id: fault_offset
+    attributes:
+      label: Fault offset
+      placeholder: "0x000154fb"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: spooler
+    attributes:
+      label: 停止 Print Spooler 后行为是否改变？
+      options:
+        - "是 —— wprnt.c / Toolkit Error 消失"
+        - "否 —— 行为没有变化"
+        - "未测试"
+        - "不适用 —— 没有出现 Toolkit Error"
+    validations:
+      required: true
+
+  - type: textarea
+    id: symptoms
+    attributes:
+      label: 现象描述
+      description: 具体发生了什么？错误弹窗的完整文字、在什么阶段崩溃等。
+    validations:
+      required: true
+
+  - type: input
+    id: dump_link
+    attributes:
+      label: 崩溃转储链接（可选）
+      description: |
+        请把转储托管到外部并提供链接。转储大小约 164 MB，
+        请勿直接作为附件上传到 Issue。
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: 确认事项
+      options:
+        - label: 我已阅读 docs/troubleshooting.zh-CN.md
+          required: true
+        - label: 我没有附加任何商业二进制文件、破解文件、注册机或授权绕过内容
+          required: true
+        - label: 我理解本项目不是官方补丁，与软件原厂无隶属关系
+          required: true

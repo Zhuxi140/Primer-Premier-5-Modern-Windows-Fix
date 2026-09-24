@@ -1,5 +1,9 @@
 # Changelog
 
+> **Language / 语言:** **English** · [**中文版 → CHANGELOG.zh-CN.md**](CHANGELOG.zh-CN.md)
+>
+> 本文档的中文版位于 [`CHANGELOG.zh-CN.md`](CHANGELOG.zh-CN.md)。
+
 All notable changes to this project are documented here.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),

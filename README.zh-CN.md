@@ -1,5 +1,10 @@
 # Primer Premier 5 / XVT 4.58 现代 Windows 兼容性修复
 
+> **语言 / Language:** **中文** · [**English → README.md**](README.md)
+>
+> 本文档的英文版本位于 [`README.md`](README.md)。本仓库所有文档均提供中英两份，
+> 每份英文文档顶部都标注了对应中文文档的位置。
+
 本项目提供一个**可复现、可验证**的兼容性补丁，用于修复 **Primer Premier 5.00**
 在现代 64 位 Windows 上因旧版 **XVT Runtime 4.58**（`xnmba458.dll`）导致的启动崩溃。
 
@@ -25,7 +30,7 @@ Primer Premier 5 在现代 Windows 上存在**两个相互独立**的兼容性�
 | 异常 | Toolkit 错误 `MSG 0x0073c35f [CAT 7/3 STD 50015]` | `0xC0000005` `INVALID_POINTER_READ` |
 | 状态 | **仅有绕过方案**（停止 Print Spooler） | **本补丁已修复** |
 
-本仓库**只修复问题 B**。问题 A 记录在 [`docs/troubleshooting.md`](docs/troubleshooting.md)。
+本仓库**只修复问题 B**。问题 A 记录在 [`docs/troubleshooting.zh-CN.md`](docs/troubleshooting.zh-CN.md)。
 
 ---
 
@@ -199,7 +204,7 @@ Stop-Service Spooler -Force
 ```
 
 这一层目前尚未完成真正的永久修复。详见
-[`docs/troubleshooting.md`](docs/troubleshooting.md)。
+[`docs/troubleshooting.zh-CN.md`](docs/troubleshooting.zh-CN.md)。
 
 ---
 
@@ -207,7 +212,7 @@ Stop-Service Spooler -Force
 
 * 仅在一个 `xnmba458.dll` 版本（上述 SHA256）上完成验证。
 * 尚未在所有 Windows 10/11 Build 上测试，测试矩阵见
-  [`docs/technical-analysis.md`](docs/technical-analysis.md)。
+  [`docs/technical-analysis.zh-CN.md`](docs/technical-analysis.zh-CN.md)。
 * 不是官方补丁，与软件原厂无隶属或认可关系。
 * 不修复 Print Spooler / `wprnt.c` 问题。
 * 不涉及、不替换、不绕过任何授权、激活或保护机制。本仓库不包含破解、注册机或授权绕过内容，
@@ -218,11 +223,16 @@ Stop-Service Spooler -Force
 
 ## 文档
 
-| 文档 | 内容 |
-|---|---|
-| [`docs/technical-analysis.md`](docs/technical-analysis.md) | 完整分析：转储、WinDbg、反汇编、PE 结构、补丁设计与验证 |
-| [`docs/crash-analysis.md`](docs/crash-analysis.md) | 崩溃签名速查，以及如何自行抓取转储 |
-| [`docs/troubleshooting.md`](docs/troubleshooting.md) | Print Spooler / `wprnt.c` 问题及其他启动问题 |
+| 文档 | English | 内容 |
+|---|---|---|
+| [`docs/technical-analysis.zh-CN.md`](docs/technical-analysis.zh-CN.md) | [EN](docs/technical-analysis.md) | 完整分析：转储、WinDbg、反汇编、PE 结构、补丁设计与验证 |
+| [`docs/crash-analysis.zh-CN.md`](docs/crash-analysis.zh-CN.md) | [EN](docs/crash-analysis.md) | 崩溃签名速查，以及如何自行抓取转储 |
+| [`docs/troubleshooting.zh-CN.md`](docs/troubleshooting.zh-CN.md) | [EN](docs/troubleshooting.md) | Print Spooler / `wprnt.c` 问题及其他启动问题 |
+| [`CHANGELOG.zh-CN.md`](CHANGELOG.zh-CN.md) | [EN](CHANGELOG.md) | 版本记录 |
+| [`LICENSE.zh-CN.md`](LICENSE.zh-CN.md) | [EN](LICENSE) | 许可证（以英文原文为准） |
+| [`README.zh-CN.md`](README.zh-CN.md) | [EN](README.md) | 本文件 |
+
+本仓库每份英文文档顶部都标注了对应中文文档的位置。
 
 ---
 
@@ -231,8 +241,8 @@ Stop-Service Spooler -Force
 `xnmba458.dll` 是 Primer Premier 附带的原始 XVT Runtime 组件。本项目在**用户自己的机器上**、
 对**用户自己已拥有的文件**修改了少量字节，不重新分发任何商业二进制文件。
 
-[LICENSE](LICENSE) 仅覆盖本仓库中的原创脚本与文档，不对 Primer Premier、XVT 及其任何组件或
-商标主张任何权利。所有商标归各自所有者所有。
+[LICENSE](LICENSE)（[中文参考译文](LICENSE.zh-CN.md)，以英文原文为准）仅覆盖本仓库中的原创脚本与文档，
+不对 Primer Premier、XVT 及其任何组件或商标主张任何权利。所有商标归各自所有者所有。
 
 ---
 
