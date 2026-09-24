@@ -174,7 +174,8 @@ case, restore the DLL from your own installation media or backup.
 
 ## 7. The application starts but behaves oddly
 
-This patch changes 33 bytes in one runtime module and nothing else. It does not
+This patch changes 33 bytes (across two regions spanning 37 bytes) in one runtime
+module and nothing else. It does not
 alter Primer's own code, data files, licence handling or configuration.
 
 If you observe unrelated instability:

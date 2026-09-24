@@ -30,6 +30,12 @@
 
         Addresses >= 0x10000 keep the original XVT code path.
 
+    Bytes touched:
+        Region A  0x154F5 .. 0x154FE   span 10 bytes, 10 changed
+        Region B  0x48EE0 .. 0x48EFA   span 27 bytes, 23 changed
+        ------------------------------------------------
+        span 37 bytes total, 33 bytes actually change value.
+
     Safety:
         * The exact SHA256 of the supported original DLL is verified first.
         * File size is verified.
@@ -37,6 +43,8 @@
         * The code cave region is verified to be untouched zero padding.
         * A backup (xnmba458.dll.original) is created before any write.
         * The result is re-read and verified against the expected patched SHA256.
+        * If post-write verification fails, the original DLL is restored
+          automatically from the backup.
         * Any mismatch aborts the script. There is no "best effort" mode.
 
 .PARAMETER Path
@@ -50,7 +58,8 @@
     that does not match the supported original SHA256 causes an abort.
 
 .PARAMETER DryRun
-    Perform every verification but do not write anything.
+    Perform every verification and report exactly what would happen, but write
+    nothing at all - no patch bytes and no backup file.
 
 .PARAMETER KeepReadOnly
     Re-apply the read-only attribute after patching if the source file had it.
@@ -134,6 +143,7 @@ function Test-ByteRange {
         [Parameter(Mandatory)][int]$Offset,
         [Parameter(Mandatory)][byte[]]$Expected
     )
+    if ($Offset -lt 0) { return $false }
     if ($Offset + $Expected.Length -gt $Data.Length) { return $false }
     for ($i = 0; $i -lt $Expected.Length; $i++) {
         if ($Data[$Offset + $i] -ne $Expected[$i]) { return $false }
@@ -150,13 +160,47 @@ function Write-BytesAt {
     [Array]::Copy($Value, 0, $Data, $Offset, $Value.Length)
 }
 
+# Aborts the script.
+#   -AfterWrite must be set once the target DLL has been modified, so the user
+#   is not falsely told that nothing changed.
 function Fail {
-    param([string]$Message)
+    param(
+        [string]$Message,
+        [switch]$AfterWrite
+    )
     Write-Host ''
     Write-Host "  ABORTED: $Message" -ForegroundColor Red
-    Write-Host '  No changes were made.' -ForegroundColor Red
+    if ($AfterWrite) {
+        Write-Host '  The target DLL was already modified before this failure.' -ForegroundColor Red
+        Write-Host "  Restore it with:  .\restore-xnmba458.ps1 -Path `"$script:dllPath`"" -ForegroundColor Red
+    }
+    else {
+        Write-Host '  No changes were made.' -ForegroundColor Red
+    }
     Write-Host ''
     exit 1
+}
+
+# Copies the verified backup back over the target. Returns $true on success.
+function Restore-FromBackup {
+    param(
+        [Parameter(Mandatory)][string]$BackupFile,
+        [Parameter(Mandatory)][string]$TargetFile
+    )
+    try {
+        Copy-Item -LiteralPath $BackupFile -Destination $TargetFile -Force
+        $restoredSha = Get-Sha256Hex -FilePath $TargetFile
+        if ($restoredSha -eq $OriginalSha256) {
+            Write-Host "  [OK] recovery        original DLL restored from $BackupFile" -ForegroundColor Green
+            return $true
+        }
+        Write-Host '  [!!] recovery        restored file failed SHA256 verification' -ForegroundColor Red
+        return $false
+    }
+    catch {
+        Write-Host "  [!!] recovery        failed: $($_.Exception.Message)" -ForegroundColor Red
+        return $false
+    }
 }
 
 # ---------------------------------------------------------------------------
@@ -166,6 +210,10 @@ function Fail {
 Write-Host ''
 Write-Host 'Primer Premier 5 / XVT 4.58 - xnmba458.dll compatibility patcher' -ForegroundColor Cyan
 Write-Host '========================================================================'
+if ($DryRun) {
+    Write-Host '  MODE: DRY RUN - nothing will be written' -ForegroundColor Yellow
+    Write-Host '========================================================================'
+}
 Write-Host ''
 
 # ---------------------------------------------------------------------------
@@ -177,6 +225,7 @@ if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
 }
 
 $dll = (Resolve-Path -LiteralPath $Path).ProviderPath
+$script:dllPath = $dll
 if (-not $BackupPath) { $BackupPath = "$dll.original" }
 $backupFull = [System.IO.Path]::GetFullPath($BackupPath)
 
@@ -254,19 +303,23 @@ Write-Host ''
 
 # ---------------------------------------------------------------------------
 # 5. Backup
+#
+# In -DryRun mode nothing is written, including the backup. The script only
+# reports what would happen, so that "no bytes written" is literally true.
 # ---------------------------------------------------------------------------
 
 $isReadOnly = ($info.Attributes -band [System.IO.FileAttributes]::ReadOnly) -ne 0
+$backupExists = Test-Path -LiteralPath $backupFull -PathType Leaf
+$backupUsable = $false
 
-if (Test-Path -LiteralPath $backupFull -PathType Leaf) {
+if ($backupExists) {
     $backupSha = Get-Sha256Hex -FilePath $backupFull
     if ($backupSha -eq $OriginalSha256) {
+        $backupUsable = $true
         Write-Host '  [OK] backup          existing backup already matches the original build' -ForegroundColor Green
     }
     elseif ($Force) {
-        Write-Host '  [!!] backup          overwriting existing backup because -Force was used' -ForegroundColor Yellow
-        [System.IO.File]::WriteAllBytes($backupFull, $data)
-        Write-Host '  [OK] backup          written' -ForegroundColor Green
+        Write-Host '  [!!] backup          existing backup does not match; -Force will overwrite it' -ForegroundColor Yellow
     }
     else {
         $msg = "A backup already exists at $backupFull but its SHA256 does not match the`n"
@@ -276,6 +329,29 @@ if (Test-Path -LiteralPath $backupFull -PathType Leaf) {
     }
 }
 else {
+    Write-Host '  [..] backup          no backup yet; one will be created before patching'
+}
+
+if ($DryRun) {
+    Write-Host ''
+    if ($backupUsable) {
+        Write-Host '  [--] dry run         would reuse the existing verified backup' -ForegroundColor Yellow
+    }
+    elseif ($backupExists) {
+        Write-Host '  [--] dry run         would overwrite the existing backup (-Force)' -ForegroundColor Yellow
+    }
+    else {
+        Write-Host "  [--] dry run         would create $backupFull" -ForegroundColor Yellow
+    }
+    Write-Host '  [--] dry run         would write 10 bytes @ 0x154F5 and 27 bytes @ 0x48EE0' -ForegroundColor Yellow
+    Write-Host '  [--] dry run         all checks passed, nothing was written' -ForegroundColor Yellow
+    Write-Host ''
+    Write-Host ("  Expected patched sha256 : {0}" -f $PatchedSha256)
+    Write-Host ''
+    exit 0
+}
+
+if (-not $backupUsable) {
     [System.IO.File]::WriteAllBytes($backupFull, $data)
     $backupSha = Get-Sha256Hex -FilePath $backupFull
     if ($backupSha -ne $OriginalSha256) {
@@ -288,12 +364,6 @@ Write-Host ''
 # ---------------------------------------------------------------------------
 # 6. Apply the patch
 # ---------------------------------------------------------------------------
-
-if ($DryRun) {
-    Write-Host '  [--] dry run         all checks passed, no bytes written' -ForegroundColor Yellow
-    Write-Host ''
-    exit 0
-}
 
 if ($isReadOnly) {
     Write-Host '  [..] attributes      clearing read-only so the file can be written'
@@ -317,36 +387,55 @@ Write-Host ''
 
 # ---------------------------------------------------------------------------
 # 7. Re-verify the patched file
+#
+# From this point on the DLL has been modified. If anything fails we restore the
+# backup automatically rather than leaving a half-patched runtime module behind.
 # ---------------------------------------------------------------------------
 
 $verify = [System.IO.File]::ReadAllBytes($dll)
+$verifyError = $null
 
 if (-not (Test-ByteRange -Data $verify -Offset $EntryOffset -Expected $entryPatched)) {
-    Fail 'Post-patch verification failed at the patch site.'
+    $verifyError = 'Post-patch verification failed at the patch site (0x154F5).'
 }
-Write-Host ("  [OK] verify @ 0x{0:X}  {1}" -f $EntryOffset, (Format-Hex $entryPatched)) -ForegroundColor Green
-
-if (-not (Test-ByteRange -Data $verify -Offset $CaveOffset -Expected $cavePatched)) {
-    Fail 'Post-patch verification failed inside the code cave.'
+elseif (-not (Test-ByteRange -Data $verify -Offset $CaveOffset -Expected $cavePatched)) {
+    $verifyError = 'Post-patch verification failed inside the code cave (0x48EE0).'
 }
-Write-Host ("  [OK] verify @ 0x{0:X}  {1}" -f $CaveOffset, (Format-Hex $cavePatched)) -ForegroundColor Green
+else {
+    Write-Host ("  [OK] verify @ 0x{0:X}  {1}" -f $EntryOffset, (Format-Hex $entryPatched)) -ForegroundColor Green
+    Write-Host ("  [OK] verify @ 0x{0:X}  {1}" -f $CaveOffset, (Format-Hex $cavePatched)) -ForegroundColor Green
 
-$finalSha = Get-Sha256Hex -FilePath $dll
-Write-Host "  [..] sha256          $finalSha"
+    $finalSha = Get-Sha256Hex -FilePath $dll
+    Write-Host "  [..] sha256          $finalSha"
 
-if ($finalSha -ne $PatchedSha256) {
-    Write-Host ''
-    Write-Host '  Final SHA256 does not match the expected patched build.' -ForegroundColor Red
-    Write-Host "    expected : $PatchedSha256"
-    Write-Host "    actual   : $finalSha"
-    Write-Host ''
-    Write-Host '  The byte-level checks passed but the whole-file hash differs, which' -ForegroundColor Red
-    Write-Host '  should be impossible for this build. Restore from the backup and' -ForegroundColor Red
-    Write-Host '  report this as an issue.' -ForegroundColor Red
-    Write-Host ''
-    exit 3
+    if ($finalSha -ne $PatchedSha256) {
+        $verifyError = ("Final SHA256 does not match the expected patched build.`n" +
+                        "         expected : $PatchedSha256`n" +
+                        "         actual   : $finalSha")
+    }
+    else {
+        Write-Host '  [OK] sha256          matches the expected patched build' -ForegroundColor Green
+    }
 }
-Write-Host '  [OK] sha256          matches the expected patched build' -ForegroundColor Green
+
+if ($verifyError) {
+    Write-Host ''
+    Write-Host "  $verifyError" -ForegroundColor Red
+    Write-Host ''
+    Write-Host '  Rolling back to the original DLL...' -ForegroundColor Yellow
+    $restored = Restore-FromBackup -BackupFile $backupFull -TargetFile $dll
+
+    if ($restored) {
+        Write-Host ''
+        Write-Host '  The original DLL has been restored. The file is back in its pre-patch state.' -ForegroundColor Yellow
+        Write-Host '  Nothing is broken - but the patch did NOT apply. Please report this as an issue.' -ForegroundColor Yellow
+        Write-Host ''
+        exit 3
+    }
+
+    Fail $verifyError -AfterWrite
+}
+
 Write-Host ''
 
 # ---------------------------------------------------------------------------

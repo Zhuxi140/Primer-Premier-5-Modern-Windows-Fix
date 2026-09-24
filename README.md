@@ -7,6 +7,43 @@
 > available in both English and Chinese; each English document links to its
 > Chinese counterpart at the top.
 
+---
+
+## Quick Start
+
+**Step 1 — does this patch apply to you?** Check the SHA256 of your own DLL:
+
+```powershell
+Get-FileHash "C:\Primer Premier 5\xnmba458.dll" -Algorithm SHA256
+```
+
+If the result is exactly this value, the patch supports your build:
+
+```text
+6FF40C2B8A9C63C403F529106C154E72BF5B818E112F4204F05D66394CF4BBF9
+```
+
+**Step 2 — download and run the patcher.** Grab
+[`patch/patch-xnmba458.ps1`](patch/patch-xnmba458.ps1) (or the copy attached to
+the [latest release](../../releases/latest)) and run:
+
+```powershell
+.\patch-xnmba458.ps1 -Path "C:\Primer Premier 5\xnmba458.dll"
+```
+
+The script backs up your DLL, verifies it byte by byte, applies the patch, and
+re-verifies the result. If any check fails it aborts without writing anything —
+and if a failure happens after the write, it restores your original DLL
+automatically. There is no "best effort" mode.
+
+Not sure if your hash matches, or getting a different error? See
+[The two problems](#the-two-problems) and
+[`docs/troubleshooting.md`](docs/troubleshooting.md).
+
+---
+
+## Overview
+
 A reproducible, verifiable compatibility patch that fixes a startup crash in
 **Primer Premier 5.00** on modern 64-bit Windows, caused by the legacy **XVT
 Runtime 4.58** shipped as `xnmba458.dll`.
@@ -105,17 +142,31 @@ this patch as implementing an official XVT rule.
 
 ### Byte-level patch data
 
-Only **33 bytes** are modified, in exactly two regions.
+Exactly **33 bytes change value**, inside two regions that span **37 bytes** in
+total (10 + 27). The two numbers are both correct — see the note below.
 
 ```text
-File offset 0x154F5  (10 bytes)
+Region A — file offset 0x154F5, 10 bytes
   original : 8B 95 7C FF FF FF 83 7A 54 00
   patched  : E9 E6 39 03 00 90 90 90 90 90
+  changed  : 10 of 10 bytes
 
-File offset 0x48EE0  (27 bytes, zero padding in the original)
+Region B — file offset 0x48EE0, 27 bytes (zero padding in the original)
   original : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
   patched  : 8B 95 7C FF FF FF 81 FA 00 00 01 00 0F 82 AA C6 FC FF 83 7A 54 00 E9 04 C6 FC FF
+  changed  : 23 of 27 bytes
 ```
+
+**Why 33 and not 37?** Four bytes in region B — `0x48EE8`, `0x48EE9`, `0x48EEB`
+and `0x48EF5` — already contained the required value (`00`) in the original file.
+They are written with identical bytes, so their value does not change.
+
+```text
+region span      : 10 + 27 = 37 bytes
+actual changes   : 10 + 23 = 33 bytes
+```
+
+No other byte of the 360960-byte file is touched.
 
 ---
 

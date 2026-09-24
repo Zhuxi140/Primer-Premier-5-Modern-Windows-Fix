@@ -570,19 +570,36 @@ Verification result:
 
 ## 19. Byte-level diff summary
 
-A full byte comparison of the original and patched files yields **exactly 33
-differing bytes**, in two contiguous regions:
+A full byte comparison of the original and patched files yields:
 
 ```text
-offset 0x154F5 - 0x154FE  (10 bytes)
+region span      : 10 + 27 = 37 bytes
+actual changes   : 10 + 23 = 33 bytes
+```
+
+Both numbers are correct and describe different things. The patch touches two
+contiguous regions whose spans total **37 bytes**, but only **33 bytes actually
+change value**, because four bytes inside the code cave already held the required
+value in the original file.
+
+```text
+Region A — offset 0x154F5 - 0x154FE  (span 10 bytes, 10 changed)
   original : 8B 95 7C FF FF FF 83 7A 54 00
   patched  : E9 E6 39 03 00 90 90 90 90 90
 
-offset 0x48EE0 - 0x48EFA  (23 bytes, all zero padding in the original)
-  original : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  patched  : 8B 95 7C FF FF FF 81 FA 00 00 01 00 0F 82 AA C6 FC FF 83 7A 54 00
-             E9 04 C6 FC FF  (extends to 0x48EFB)
+Region B — offset 0x48EE0 - 0x48EFA  (span 27 bytes, 23 changed)
+  original : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  patched  : 8B 95 7C FF FF FF 81 FA 00 00 01 00 0F 82 AA C6 FC FF 83 7A 54 00 E9 04 C6 FC FF
 ```
+
+The four bytes in region B that do not change are:
+
+```text
+0x48EE8   0x48EE9   0x48EEB   0x48EF5
+```
+
+They are `00` in the original file, and the patch also writes `00` there. The
+write is byte-identical, so no change is observable at those offsets.
 
 No other byte in the 360960-byte file is modified.
 

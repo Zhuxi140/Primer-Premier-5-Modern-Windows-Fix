@@ -52,10 +52,19 @@ function Get-Sha256Hex {
 }
 
 function Fail {
-    param([string]$Message)
+    param(
+        [string]$Message,
+        [switch]$AfterWrite
+    )
     Write-Host ''
     Write-Host "  ABORTED: $Message" -ForegroundColor Red
-    Write-Host '  No changes were made.' -ForegroundColor Red
+    if ($AfterWrite) {
+        Write-Host '  The target file was already overwritten before this failure.' -ForegroundColor Red
+        Write-Host "  Copy your own backup over it manually, then verify the SHA256." -ForegroundColor Red
+    }
+    else {
+        Write-Host '  No changes were made.' -ForegroundColor Red
+    }
     Write-Host ''
     exit 1
 }
@@ -152,7 +161,7 @@ $finalSha = Get-Sha256Hex -FilePath $targetFull
 Write-Host "  [..] sha256  $finalSha"
 
 if ($finalSha -ne $OriginalSha256) {
-    Fail 'Verification after restore failed. The file does not match the original build.'
+    Fail 'Verification after restore failed. The file does not match the original build.' -AfterWrite
 }
 
 Write-Host '  [OK] verification passed' -ForegroundColor Green
