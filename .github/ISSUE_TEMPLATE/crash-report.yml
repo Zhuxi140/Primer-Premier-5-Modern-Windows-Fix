@@ -1,0 +1,139 @@
+name: Crash report / compatibility report
+description: Report a Primer Premier 5 startup crash, or a different xnmba458.dll build
+title: "[Crash] "
+labels: ["crash-report", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. The single most important
+        field below is the **SHA256 of your `xnmba458.dll`**.
+
+        This project only patches one specific build, identified by its SHA256.
+        If your hash differs, the patcher will refuse to run — and that is by
+        design. Reporting your hash is how support for additional builds gets
+        added.
+
+        Please do **not** attach `xnmba458.dll`, `Primer Premier 5.exe`, the
+        installer, any crack, or any other commercial binary. Such attachments
+        will be removed.
+
+  - type: input
+    id: os
+    attributes:
+      label: Windows version
+      description: e.g. Windows 11 Home
+      placeholder: Windows 11 Home
+    validations:
+      required: true
+
+  - type: input
+    id: build
+    attributes:
+      label: Windows build
+      description: Run `winver`, or `[System.Environment]::OSVersion.Version` in PowerShell
+      placeholder: "26200"
+    validations:
+      required: true
+
+  - type: input
+    id: pp_version
+    attributes:
+      label: Primer Premier version
+      description: From `Read Me.txt` in the installation directory
+      placeholder: "Primer Premier 5.00"
+    validations:
+      required: true
+
+  - type: input
+    id: dll_size
+    attributes:
+      label: xnmba458.dll size (bytes)
+      description: "`(Get-Item .\\xnmba458.dll).Length`"
+      placeholder: "360960"
+    validations:
+      required: true
+
+  - type: input
+    id: dll_sha256
+    attributes:
+      label: xnmba458.dll SHA256
+      description: "`Get-FileHash .\\xnmba458.dll -Algorithm SHA256`"
+      placeholder: 64 hexadecimal characters
+    validations:
+      required: true
+
+  - type: input
+    id: dll_version
+    attributes:
+      label: xnmba458.dll file version
+      description: Right-click the DLL, Properties, Details tab
+      placeholder: "4.58.0.0"
+    validations:
+      required: false
+
+  - type: input
+    id: faulting_module
+    attributes:
+      label: Faulting module (from Event Log)
+      placeholder: xnmba458.dll
+    validations:
+      required: false
+
+  - type: input
+    id: exception_code
+    attributes:
+      label: Exception code
+      placeholder: "0xc0000005"
+    validations:
+      required: false
+
+  - type: input
+    id: fault_offset
+    attributes:
+      label: Fault offset
+      placeholder: "0x000154fb"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: spooler
+    attributes:
+      label: Does stopping the Print Spooler change the behaviour?
+      options:
+        - "Yes - the wprnt.c / Toolkit Error goes away"
+        - "No - behaviour is unchanged"
+        - "Not tested"
+        - "Not applicable - no Toolkit error appears"
+    validations:
+      required: true
+
+  - type: textarea
+    id: symptoms
+    attributes:
+      label: Symptoms
+      description: What exactly happens? Error dialog text, when it crashes, and so on.
+    validations:
+      required: true
+
+  - type: input
+    id: dump_link
+    attributes:
+      label: Crash dump link (optional)
+      description: |
+        Host dumps externally and link them here. Dumps are around 164 MB —
+        please do not attach them directly to the issue.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I have read docs/troubleshooting.md
+          required: true
+        - label: I am not attaching any commercial binary, crack, keygen or licence-bypass material
+          required: true
+        - label: I understand this project is not an official patch and is not affiliated with the vendor
+          required: true

@@ -1,0 +1,62 @@
+# ---------------------------------------------------------------------------
+# Never commit commercial binaries.
+#
+# This repository intentionally ships only original scripts, patch data and
+# documentation. Primer Premier 5, the XVT Runtime and any DLL or executable
+# taken from an installation must never be pushed here.
+# ---------------------------------------------------------------------------
+
+# Original / patched runtime binaries
+xnmba458.dll
+xnmba458.dll.original
+xnmba458.dll.patched
+unmpr458.dll
+xnmhn458.dll
+xnmr70mt.dll
+xnmte458.dll
+*.dll
+*.exe
+*.ocx
+*.drv
+
+# Installers, archives and packages
+*.zip
+*.rar
+*.7z
+*.cab
+*.msi
+*.iso
+
+# Crash dumps and debugger artefacts
+*.dmp
+*.mdmp
+*.hdmp
+*.dump
+*.wer
+*.log
+!*.gitkeep
+
+# Primer Premier data / resource folders
+data/
+waves/
+Primer5.hlp
+
+# Cracks and licence-bypass material (never accepted)
+Crack.exe
+crack/
+keygen/
+*.key
+*.nfo
+
+# ---------------------------------------------------------------------------
+# Tooling / editor noise
+# ---------------------------------------------------------------------------
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+desktop.ini

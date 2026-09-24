@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Read the troubleshooting guide first
+    url: https://github.com/Zhuxi140/Primer-Premier-5-Modern-Windows-Fix/blob/main/docs/troubleshooting.md
+    about: Covers the Print Spooler / wprnt.c issue, "unsupported DLL" aborts, and how to undo the patch.
+  - name: Read the technical analysis
+    url: https://github.com/Zhuxi140/Primer-Premier-5-Modern-Windows-Fix/blob/main/docs/technical-analysis.md
+    about: Full dump analysis, disassembly, patch design and the current test matrix.
