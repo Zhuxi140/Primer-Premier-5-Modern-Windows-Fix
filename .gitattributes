@@ -1,0 +1,16 @@
+# Normalize line endings so the repository is consistent across platforms.
+* text=auto eol=lf
+
+# Explicit, for clarity
+*.md   text eol=lf
+*.yml  text eol=lf
+*.ps1  text eol=lf
+
+# Binary-ish files that must never be normalized
+*.png  binary
+*.jpg  binary
+*.gif  binary
+*.ico  binary
+*.zip  binary
+*.dll  binary
+*.exe  binary
